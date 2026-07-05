@@ -14,7 +14,7 @@
   --color-bg-page:        #F8F9FA;
   --color-bg-sidebar:     #F7F4D5;
   --color-bg-surface:     #FFFFFF;
-  --color-bg-hover:       #E8E8E8;
+  --color-bg-hover:       #D3968C;
   --color-bg-active:      #F0F0F0;
 
   --color-text-primary:   #0A3323;
@@ -122,7 +122,6 @@ input {
   background-color: var(--color-bg-sidebar);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
 }
 
 .content {
@@ -172,7 +171,6 @@ input {
   margin-bottom: var(--space-2);
 }
 
-/* Task 5 — Hamburger Button */
 .sidebar__hamburger {
   font-size: var(--text-xl);
   color: var(--color-text-primary);
@@ -185,7 +183,6 @@ input {
   background-color: var(--color-bg-hover);
 }
 
-/* Task 1 — Navigation Items */
 .sidebar__item a {
   display: flex;
   justify-content: space-between;
@@ -208,7 +205,6 @@ input {
   font-weight: var(--weight-medium);
 }
 
-/* Task 2 — Badges */
 .sidebar__badge {
   font-size: var(--text-sm);
   font-weight: var(--weight-regular);
@@ -221,7 +217,6 @@ input {
   line-height: 1;
 }
 
-/* Task 3 — Colored Dots */
 .sidebar__dot {
   width: var(--space-2);
   height: var(--space-2);
@@ -230,7 +225,10 @@ input {
   flex-shrink: 0;
 }
 
-/* Task 4 — Tag Pills */
+.sidebar__dot--personal { background-color: var(--color-list-personal); }
+.sidebar__dot--work    { background-color: var(--color-list-work); }
+.sidebar__dot--yellow  { background-color: var(--color-list-1); }
+
 .sidebar__tag {
   display: inline-block;
   padding: var(--space-1) var(--space-3);
@@ -238,6 +236,9 @@ input {
   font-size: var(--text-sm);
   color: var(--color-text-primary);
 }
+
+.sidebar__tag--blue { background-color: var(--color-tag-1); }
+.sidebar__tag--pink { background-color: var(--color-tag-2); }
 
 .sidebar__footer {
   margin-top: auto;
