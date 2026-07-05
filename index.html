@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List App</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="dashboard">
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar">
+
+      <header class="sidebar__header">
+        <h2 class="sidebar__title">Menu</h2>
+        <span class="sidebar__hamburger">☰</span>
+      </header>
+
+      <form class="sidebar__search">
+        <input type="text" placeholder="Search">
+      </form>
+
+      <!-- TASKS Navigation -->
+      <section class="sidebar__section">
+        <h3 class="sidebar__section-title">TASKS</h3>
+        <nav>
+          <ul class="sidebar__nav">
+            <li class="sidebar__item"><a href="#">Upcoming</a></li>
+            <li class="sidebar__item"><a href="#">Today</a></li>
+            <li class="sidebar__item"><a href="#">Calendar</a></li>
+            <li class="sidebar__item"><a href="#">Sticky Wall</a></li>
+          </ul>
+        </nav>
+      </section>
+
+      <!-- LISTS Navigation -->
+      <section class="sidebar__section">
+        <h3 class="sidebar__section-title">LISTS</h3>
+        <nav>
+          <ul class="sidebar__nav">
+            <li class="sidebar__item"><a href="#">Personal</a></li>
+            <li class="sidebar__item"><a href="#">Work</a></li>
+            <li class="sidebar__item"><a href="#">List 1</a></li>
+            <li class="sidebar__item"><a href="#">+ Add New List</a></li>
+          </ul>
+        </nav>
+      </section>
+
+      <!-- TAGS -->
+      <section class="sidebar__section">
+        <h3 class="sidebar__section-title">TAGS</h3>
+        <ul class="sidebar__nav">
+          <li class="sidebar__item">Tag 1</li>
+          <li class="sidebar__item">Tag 2</li>
+          <li class="sidebar__item">+ Add Tag</li>
+        </ul>
+      </section>
+
+      <!-- Footer -->
+      <footer class="sidebar__footer">
+        <nav>
+          <ul class="sidebar__nav">
+            <li class="sidebar__item"><a href="#">Settings</a></li>
+            <li class="sidebar__item"><a href="#">Sign Out</a></li>
+          </ul>
+        </nav>
+      </footer>
+
+    </aside>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="content">
+
+      <!-- Today Section -->
+      <section class="content__group">
+        <header class="content__group-header">
+          <h1 class="content__group-title">Today</h1>
+          <button class="content__add-btn">+ Add New Task</button>
+        </header>
+        <ul class="content__task-list">
+          <li class="task">Task</li>
+          <li class="task">Task</li>
+          <li class="task">Task</li>
+        </ul>
+      </section>
+
+      <!-- Tomorrow Section -->
+      <section class="content__group">
+        <header class="content__group-header">
+          <h2 class="content__group-title">Tomorrow</h2>
+          <button class="content__add-btn">+ Add New Task</button>
+        </header>
+        <ul class="content__task-list">
+          <li class="task">Task</li>
+          <li class="task">Task</li>
+        </ul>
+      </section>
+
+      <!-- This Week Section -->
+      <section class="content__group">
+        <header class="content__group-header">
+          <h2 class="content__group-title">This Week</h2>
+          <button class="content__add-btn">+ Add New Task</button>
+        </header>
+        <ul class="content__task-list">
+          <li class="task">Task</li>
+          <li class="task">Task</li>
+        </ul>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
