@@ -117,7 +117,7 @@ input {
 
 .sidebar {
   width: var(--sidebar-width);
-  height: 100vh;
+  height: 100%;
   padding: var(--space-4);
   background-color: var(--color-bg-sidebar);
   display: flex;
@@ -170,6 +170,73 @@ input {
   letter-spacing: 0.05em;
   color: var(--color-text-secondary);
   margin-bottom: var(--space-2);
+}
+
+/* Task 5 — Hamburger Button */
+.sidebar__hamburger {
+  font-size: var(--text-xl);
+  color: var(--color-text-primary);
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.sidebar__hamburger:hover {
+  background-color: var(--color-bg-hover);
+}
+
+/* Task 1 — Navigation Items */
+.sidebar__item a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2);
+  font-size: var(--text-md);
+  color: var(--color-text-body);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.sidebar__item a:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.sidebar__item--active a {
+  background-color: var(--color-bg-active);
+  color: var(--color-text-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* Task 2 — Badges */
+.sidebar__badge {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-surface);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  min-width: 1.5rem;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Task 3 — Colored Dots */
+.sidebar__dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Task 4 — Tag Pills */
+.sidebar__tag {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
 }
 
 .sidebar__footer {
