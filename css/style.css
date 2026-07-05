@@ -14,8 +14,8 @@
   --color-bg-page:        #F8F9FA;
   --color-bg-sidebar:     #F7F4D5;
   --color-bg-surface:     #FFFFFF;
-  --color-bg-hover:       #D3968C;
-  --color-bg-active:      #F0F0F0;
+  --color-bg-hover:       #d3958c87;
+  --color-bg-active:      #D3968C;
 
   --color-text-primary:   #0A3323;
   --color-text-body:      #839958;
@@ -178,7 +178,7 @@ input {
   color: var(--color-text-primary);
   padding: var(--space-1);
   border-radius: var(--radius-sm);
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .sidebar__hamburger:hover {
@@ -281,7 +281,60 @@ input {
 }
 
 .content__task-list {
-  /* task rows will be styled in the next sprint */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* ===== TASK COMPONENT (PR #1 — Layout: checkbox, title, arrow) ===== */
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+.task__check {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.task__checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.task__checkmark {
+  width: var(--space-5);
+  height: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-surface);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.task__title {
+  flex: 1;
+  font-size: var(--text-md);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task__arrow {
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .visually-hidden {
