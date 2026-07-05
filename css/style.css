@@ -290,7 +290,7 @@ input {
 
 .task {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
@@ -321,13 +321,33 @@ input {
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.task__title {
+.task__content {
   flex: 1;
+  min-width: 0;
+}
+
+.task__title {
   font-size: var(--text-md);
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.task__meta {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-1);
+}
+
+.task__meta > * {
+  font-size: var(--text-sm);
+  color: var(--color-text-body);
+}
+
+.task__meta > * + *::before {
+  content: "·";
+  margin: 0 var(--space-2);
 }
 
 .task__arrow {
