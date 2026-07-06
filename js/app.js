@@ -280,7 +280,7 @@ function undoDelete() {
 
 // ===== UNDO TOAST UI =====
 
-function showUndoToast(task) {
+function showUndoToast() {
   clearUndoState();
 
   const toast = document.createElement('div');
@@ -306,23 +306,16 @@ function showUndoToast(task) {
 
 // ===== DELETE ANIMATION =====
 
-function animateTaskRemoval(taskEl) {
-  taskEl.style.transition = 'opacity 0.15s ease';
-  taskEl.style.opacity = '0';
+function animateTaskRemoval(taskEl, onDone) {
+  taskEl.classList.add('task--removing');
 
-  taskEl.addEventListener('transitionend', () => {
-    taskEl.style.transition = 'height 0.15s ease, margin 0.15s ease, padding 0.15s ease';
-    taskEl.style.height = '0';
-    taskEl.style.marginTop = '0';
-    taskEl.style.marginBottom = '0';
-    taskEl.style.paddingTop = '0';
-    taskEl.style.paddingBottom = '0';
-    taskEl.style.overflow = 'hidden';
+  function onTransitionEnd(event) {
+    if (event.propertyName !== 'height') return;
+    taskEl.removeEventListener('transitionend', onTransitionEnd);
+    onDone();
+  }
 
-    taskEl.addEventListener('transitionend', () => {
-      taskEl.remove();
-    }, { once: true });
-  }, { once: true });
+  taskEl.addEventListener('transitionend', onTransitionEnd);
 }
 
 // ===== TASK LIST HANDLER (delegated: toggle + delete) =====
@@ -338,18 +331,21 @@ function handleTaskListClick(event) {
     return;
   }
 
-  // Delete: delete button click
+  // Delete: animate first, then mutate state and render
   if (event.target.matches('.task__delete')) {
     const taskEl = event.target.closest('.task');
     if (!taskEl) return;
     const id = taskEl.dataset.id;
     const index = findTaskIndex(id);
     if (index === -1) return;
-    const deletedTask = deleteTask(index);
-    storeUndoState(deletedTask, index);
-    saveTasks();
-    animateTaskRemoval(taskEl);
-    showUndoToast(deletedTask);
+
+    animateTaskRemoval(taskEl, () => {
+      const deletedTask = deleteTask(index);
+      storeUndoState(deletedTask, index);
+      saveTasks();
+      render();
+      showUndoToast();
+    });
     return;
   }
 }

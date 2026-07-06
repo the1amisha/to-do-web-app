@@ -309,6 +309,15 @@ input {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
+  transition: opacity 0.15s ease, height 0.15s ease, padding 0.15s ease;
+}
+
+.task--removing {
+  opacity: 0;
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
 }
 
 .task__check {
