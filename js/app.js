@@ -3,6 +3,12 @@
 // ===== STATE =====
 let tasks = [];
 let activeAddForm = null;
+let undoState = {
+  task: null,
+  index: null,
+  timer: null,
+  toast: null
+};
 
 // ===== STORAGE =====
 const STORAGE_KEY = 'todo_tasks';
@@ -147,6 +153,15 @@ function createArrowButton() {
   return arrow;
 }
 
+function createDeleteButton() {
+  const btn = document.createElement('button');
+  btn.className = 'task__delete';
+  btn.type = 'button';
+  btn.textContent = '×';
+  btn.setAttribute('aria-label', 'Delete task');
+  return btn;
+}
+
 function createTaskElement(task) {
   const li = document.createElement('li');
   li.className = 'task';
@@ -155,6 +170,7 @@ function createTaskElement(task) {
   li.append(
     createCheckbox(task),
     createTaskContent(task),
+    createDeleteButton(),
     createArrowButton()
   );
 
@@ -221,23 +237,121 @@ function addTask(task) {
   tasks.push(task);
 }
 
+function findTaskIndex(id) {
+  return tasks.findIndex((t) => t.id === id);
+}
+
+function deleteTask(index) {
+  return tasks.splice(index, 1)[0];
+}
+
 function toggleTask(id) {
   const task = tasks.find((t) => t.id === id);
   if (task) task.completed = !task.completed;
 }
 
-// ===== TOGGLE HANDLER =====
+// ===== DELETE STATE MANAGEMENT =====
 
-function handleTaskToggle(event) {
-  if (!event.target.matches('.task__checkbox')) return;
+function clearUndoState() {
+  if (undoState.timer) {
+    clearTimeout(undoState.timer);
+  }
+  if (undoState.toast) {
+    undoState.toast.remove();
+  }
+  undoState.task = null;
+  undoState.index = null;
+  undoState.timer = null;
+  undoState.toast = null;
+}
 
-  const taskEl = event.target.closest('.task');
-  if (!taskEl) return;
+function storeUndoState(task, index) {
+  undoState.task = task;
+  undoState.index = index;
+}
 
-  const id = taskEl.dataset.id;
-  toggleTask(id);
+function undoDelete() {
+  if (!undoState.task) return;
+  tasks.splice(undoState.index, 0, undoState.task);
+  clearUndoState();
   saveTasks();
   render();
+}
+
+// ===== UNDO TOAST UI =====
+
+function showUndoToast(task) {
+  clearUndoState();
+
+  const toast = document.createElement('div');
+  toast.className = 'undo-toast';
+  toast.setAttribute('role', 'status');
+
+  const message = document.createElement('p');
+  message.className = 'undo-toast__message';
+  message.textContent = 'Task deleted';
+
+  const undoBtn = document.createElement('button');
+  undoBtn.className = 'undo-toast__btn';
+  undoBtn.type = 'button';
+  undoBtn.textContent = 'Undo';
+  undoBtn.addEventListener('click', undoDelete);
+
+  toast.append(message, undoBtn);
+  document.querySelector('.content').appendChild(toast);
+
+  undoState.toast = toast;
+  undoState.timer = setTimeout(clearUndoState, 5000);
+}
+
+// ===== DELETE ANIMATION =====
+
+function animateTaskRemoval(taskEl) {
+  taskEl.style.transition = 'opacity 0.15s ease';
+  taskEl.style.opacity = '0';
+
+  taskEl.addEventListener('transitionend', () => {
+    taskEl.style.transition = 'height 0.15s ease, margin 0.15s ease, padding 0.15s ease';
+    taskEl.style.height = '0';
+    taskEl.style.marginTop = '0';
+    taskEl.style.marginBottom = '0';
+    taskEl.style.paddingTop = '0';
+    taskEl.style.paddingBottom = '0';
+    taskEl.style.overflow = 'hidden';
+
+    taskEl.addEventListener('transitionend', () => {
+      taskEl.remove();
+    }, { once: true });
+  }, { once: true });
+}
+
+// ===== TASK LIST HANDLER (delegated: toggle + delete) =====
+
+function handleTaskListClick(event) {
+  // Toggle: checkbox change
+  if (event.target.matches('.task__checkbox')) {
+    const taskEl = event.target.closest('.task');
+    if (!taskEl) return;
+    toggleTask(taskEl.dataset.id);
+    saveTasks();
+    render();
+    return;
+  }
+
+  // Delete: delete button click
+  if (event.target.matches('.task__delete')) {
+    const taskEl = event.target.closest('.task');
+    if (!taskEl) return;
+    const id = taskEl.dataset.id;
+    const index = findTaskIndex(id);
+    if (index === -1) return;
+    const deletedTask = deleteTask(index);
+    storeUndoState(deletedTask, index);
+    saveTasks();
+    animateTaskRemoval(taskEl);
+    showUndoToast(deletedTask);
+    return;
+  }
 }
 
 // ===== ADD TASK HANDLER =====
@@ -307,7 +421,10 @@ function showAddInput(section) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const added = handleAddTask(input.value, groupKey);
-    if (added) closeAddInput();
+    if (added) {
+      clearUndoState();
+      closeAddInput();
+    }
   });
 }
 
@@ -324,7 +441,7 @@ function attachEventListeners() {
 
   const taskLists = document.querySelectorAll('.content__task-list');
   taskLists.forEach((list) => {
-    list.addEventListener('change', handleTaskToggle);
+    list.addEventListener('click', handleTaskListClick);
   });
 }
 
