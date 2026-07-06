@@ -2,6 +2,7 @@
 
 // ===== STATE =====
 let tasks = [];
+let activeAddForm = null;
 
 // ===== STORAGE =====
 const STORAGE_KEY = 'todo_tasks';
@@ -12,10 +13,17 @@ function saveTasks() {
 
 function loadTasks() {
   const stored = localStorage.getItem(STORAGE_KEY);
-  tasks = stored ? JSON.parse(stored) : [];
+  return stored ? JSON.parse(stored) : [];
 }
 
 // ===== DATE HELPERS =====
+function toDateStr(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 function getDateBoundaries() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -153,6 +161,8 @@ function createTaskElement(task) {
   return li;
 }
 
+// ===== RENDERING =====
+
 function renderSections(groups) {
   const sections = document.querySelectorAll('.content__group');
 
@@ -179,9 +189,124 @@ function render() {
   renderSections(groups);
 }
 
+// ===== TASK DATA =====
+
+function resolveDueDate(groupKey) {
+  const { today, tomorrow, endOfWeek } = getDateBoundaries();
+
+  if (groupKey === 'today') return toDateStr(today);
+  if (groupKey === 'tomorrow') return toDateStr(tomorrow);
+  if (groupKey === 'thisWeek') return toDateStr(endOfWeek);
+  return toDateStr(today);
+}
+
+function validateTitle(title) {
+  return title.trim().length > 0;
+}
+
+function createTask(title, options = {}) {
+  return {
+    id: crypto.randomUUID(),
+    title: title.trim(),
+    completed: false,
+    list: options.list || '',
+    dueDate: options.dueDate || '',
+    tags: options.tags || [],
+    subtasks: options.subtasks || [],
+    createdAt: Date.now(),
+  };
+}
+
+function addTask(task) {
+  tasks.push(task);
+}
+
+// ===== ADD TASK HANDLER =====
+
+function handleAddTask(title, groupKey) {
+  if (!validateTitle(title)) return;
+
+  const dueDate = resolveDueDate(groupKey);
+  const task = createTask(title, { dueDate });
+  addTask(task);
+  saveTasks();
+  render();
+}
+
+// ===== ADD TASK UI =====
+
+function closeAddInput() {
+  if (!activeAddForm) return;
+
+  const { form, button, onClickOutside } = activeAddForm;
+  const header = form.parentElement;
+  header.replaceChild(button, form);
+
+  document.removeEventListener('click', onClickOutside);
+  activeAddForm = null;
+}
+
+function showAddInput(section) {
+  closeAddInput();
+
+  const groupKey = section.dataset.group;
+  const header = section.querySelector('.content__group-header');
+  const btn = header.querySelector('.content__add-btn');
+
+  const form = document.createElement('form');
+  form.className = 'task-add-form';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'task-add-input';
+  input.placeholder = 'Task title...';
+
+  form.appendChild(input);
+  header.replaceChild(form, btn);
+  input.focus();
+
+  // Escape closes the form
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAddInput();
+  });
+
+  // Click outside closes the form
+  // Deferred with setTimeout(0) so the button click that opened this form
+  // doesn't immediately trigger the outside-click handler
+  function onClickOutside(e) {
+    if (!form.contains(e.target)) {
+      closeAddInput();
+    }
+  }
+  setTimeout(() => {
+    document.addEventListener('click', onClickOutside);
+  }, 0);
+
+  activeAddForm = { form, button: btn, onClickOutside };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleAddTask(input.value, groupKey);
+    closeAddInput();
+  });
+}
+
+// ===== EVENT LISTENERS =====
+
+function attachEventListeners() {
+  const addBtns = document.querySelectorAll('.content__add-btn');
+  addBtns.forEach((btn) => {
+    const section = btn.closest('.content__group');
+    btn.addEventListener('click', () => {
+      showAddInput(section);
+    });
+  });
+}
+
 // ===== INITIALIZATION =====
 function init() {
-  loadTasks();
+  tasks = loadTasks();
+  attachEventListeners();
   render();
 }
 
