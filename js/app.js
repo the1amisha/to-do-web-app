@@ -221,16 +221,36 @@ function addTask(task) {
   tasks.push(task);
 }
 
+function toggleTask(id) {
+  const task = tasks.find((t) => t.id === id);
+  if (task) task.completed = !task.completed;
+}
+
+// ===== TOGGLE HANDLER =====
+
+function handleTaskToggle(event) {
+  if (!event.target.matches('.task__checkbox')) return;
+
+  const taskEl = event.target.closest('.task');
+  if (!taskEl) return;
+
+  const id = taskEl.dataset.id;
+  toggleTask(id);
+  saveTasks();
+  render();
+}
+
 // ===== ADD TASK HANDLER =====
 
 function handleAddTask(title, groupKey) {
-  if (!validateTitle(title)) return;
+  if (!validateTitle(title)) return false;
 
   const dueDate = resolveDueDate(groupKey);
   const task = createTask(title, { dueDate });
   addTask(task);
   saveTasks();
   render();
+  return true;
 }
 
 // ===== ADD TASK UI =====
@@ -286,8 +306,8 @@ function showAddInput(section) {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    handleAddTask(input.value, groupKey);
-    closeAddInput();
+    const added = handleAddTask(input.value, groupKey);
+    if (added) closeAddInput();
   });
 }
 
@@ -300,6 +320,11 @@ function attachEventListeners() {
     btn.addEventListener('click', () => {
       showAddInput(section);
     });
+  });
+
+  const taskLists = document.querySelectorAll('.content__task-list');
+  taskLists.forEach((list) => {
+    list.addEventListener('change', handleTaskToggle);
   });
 }
 
