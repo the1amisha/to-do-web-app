@@ -309,15 +309,16 @@ input {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
-  transition: opacity 0.15s ease, height 0.15s ease, padding 0.15s ease;
+  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+
+.task:hover {
+  background-color: var(--color-bg-hover);
 }
 
 .task--removing {
   opacity: 0;
-  height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  overflow: hidden;
+  transform: translateX(12px);
 }
 
 .task__check {
@@ -381,7 +382,12 @@ input {
   line-height: 1;
   padding: var(--space-1);
   border-radius: var(--radius-sm);
-  transition: color 0.15s ease;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.task:hover .task__delete {
+  opacity: 1;
 }
 
 .task__arrow {
@@ -389,6 +395,18 @@ input {
   color: var(--color-text-muted);
   flex-shrink: 0;
   line-height: 1;
+}
+
+/* ===== TASK COMPLETED STATE ===== */
+
+.task--completed .task__title {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.task--completed .task__checkmark {
+  background-color: var(--color-bg-active);
+  border-color: var(--color-bg-active);
 }
 
 /* ===== UNDO TOAST (PR #5 — Delete + Undo) ===== */

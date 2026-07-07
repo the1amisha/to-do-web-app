@@ -165,6 +165,7 @@ function createDeleteButton() {
 function createTaskElement(task) {
   const li = document.createElement('li');
   li.className = 'task';
+  if (task.completed) li.classList.add('task--completed');
   li.dataset.id = task.id;
 
   li.append(
@@ -252,17 +253,25 @@ function toggleTask(id) {
 
 // ===== DELETE STATE MANAGEMENT =====
 
-function clearUndoState() {
+function clearUndoTimer() {
   if (undoState.timer) {
     clearTimeout(undoState.timer);
+    undoState.timer = null;
   }
+}
+
+function removeUndoToast() {
   if (undoState.toast) {
     undoState.toast.remove();
+    undoState.toast = null;
   }
+}
+
+function clearUndoState() {
+  clearUndoTimer();
+  removeUndoToast();
   undoState.task = null;
   undoState.index = null;
-  undoState.timer = null;
-  undoState.toast = null;
 }
 
 function storeUndoState(task, index) {
@@ -281,7 +290,8 @@ function undoDelete() {
 // ===== UNDO TOAST UI =====
 
 function showUndoToast() {
-  clearUndoState();
+  clearUndoTimer();
+  removeUndoToast();
 
   const toast = document.createElement('div');
   toast.className = 'undo-toast';
@@ -310,7 +320,7 @@ function animateTaskRemoval(taskEl, onDone) {
   taskEl.classList.add('task--removing');
 
   function onTransitionEnd(event) {
-    if (event.propertyName !== 'height') return;
+    if (event.propertyName !== 'opacity') return;
     taskEl.removeEventListener('transitionend', onTransitionEnd);
     onDone();
   }
