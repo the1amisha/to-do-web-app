@@ -333,6 +333,34 @@ function render() {
   renderFilterState();
 }
 
+// ===== SIDEBAR LISTS =====
+
+function renderLists() {
+  const container = document.querySelector('[data-sidebar="lists"]');
+  container.innerHTML = '';
+
+  lists.forEach((list) => {
+    const li = document.createElement('li');
+    li.className = 'sidebar__item';
+    li.dataset.list = list.id;
+
+    const a = document.createElement('a');
+    a.href = '#';
+    a.textContent = list.name;
+
+    li.appendChild(a);
+    container.appendChild(li);
+  });
+
+  const addLi = document.createElement('li');
+  addLi.className = 'sidebar__item';
+  const addA = document.createElement('a');
+  addA.href = '#';
+  addA.textContent = '+ Add New List';
+  addLi.appendChild(addA);
+  container.appendChild(addLi);
+}
+
 // ===== FILTER UI =====
 
 function renderFilterState() {
@@ -365,7 +393,7 @@ function createTask(title, options = {}) {
     id: crypto.randomUUID(),
     title: title.trim(),
     completed: false,
-    listId: options.listId || '',
+    listId: options.listId || null,
     dueDate: options.dueDate || '',
     tags: options.tags || [],
     subtasks: options.subtasks || [],
@@ -618,6 +646,7 @@ function attachEventListeners() {
 function init() {
   tasks = loadTasks();
   attachEventListeners();
+  renderLists();
   render();
 }
 
