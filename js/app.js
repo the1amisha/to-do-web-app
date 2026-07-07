@@ -2,6 +2,11 @@
 
 // ===== STATE =====
 let tasks = [];
+let lists = [
+  { id: 'personal', name: 'Personal', color: '#105666' },
+  { id: 'work', name: 'Work', color: '#D3968C' }
+];
+const listMap = new Map(lists.map((l) => [l.id, l]));
 let activeAddForm = null;
 let undoState = {
   task: null,
@@ -26,7 +31,17 @@ function saveTasks() {
 
 function loadTasks() {
   const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+  if (!stored) return [];
+  return JSON.parse(stored).map((task) => {
+    if ('list' in task && !('listId' in task)) {
+      const listId = task.list
+        ? lists.find((l) => l.name.toLowerCase() === task.list.toLowerCase())?.id || null
+        : null;
+      const { list, ...rest } = task;
+      return listId ? { ...rest, listId } : rest;
+    }
+    return task;
+  });
 }
 
 // ===== DATE HELPERS =====
@@ -122,11 +137,14 @@ function createMetadata(task) {
     metaItems.push(subtaskSpan);
   }
 
-  if (task.list) {
-    const listSpan = document.createElement('span');
-    listSpan.className = 'task__list';
-    listSpan.textContent = task.list;
-    metaItems.push(listSpan);
+  if (task.listId) {
+    const list = listMap.get(task.listId);
+    if (list) {
+      const listSpan = document.createElement('span');
+      listSpan.className = 'task__list';
+      listSpan.textContent = list.name;
+      metaItems.push(listSpan);
+    }
   }
 
   if (metaItems.length === 0) return null;
@@ -265,7 +283,7 @@ function getFilteredTasks() {
   }
 
   if (activeFilters.list) {
-    visible = visible.filter((t) => t.list === activeFilters.list);
+    visible = visible.filter((t) => t.listId === activeFilters.list);
   }
 
   if (activeFilters.tag) {
@@ -318,10 +336,12 @@ function render() {
 // ===== FILTER UI =====
 
 function renderFilterState() {
-  const items = document.querySelectorAll('[data-filter]');
-  items.forEach((item) => {
-    const isActive = item.dataset.filter === activeFilters.status;
-    item.classList.toggle('sidebar__item--active', isActive);
+  document.querySelectorAll('[data-filter]').forEach((item) => {
+    item.classList.toggle('sidebar__item--active', item.dataset.filter === activeFilters.status);
+  });
+
+  document.querySelectorAll('[data-list]').forEach((item) => {
+    item.classList.toggle('sidebar__item--active', item.dataset.list === activeFilters.list);
   });
 }
 
@@ -345,7 +365,7 @@ function createTask(title, options = {}) {
     id: crypto.randomUUID(),
     title: title.trim(),
     completed: false,
-    list: options.list || '',
+    listId: options.listId || '',
     dueDate: options.dueDate || '',
     tags: options.tags || [],
     subtasks: options.subtasks || [],
@@ -556,12 +576,22 @@ function showAddInput(section) {
 // ===== EVENT LISTENERS =====
 
 function attachEventListeners() {
-  // Sidebar filter delegation
+  // Sidebar delegation: status + list filters
   const sidebar = document.querySelector('.sidebar');
   sidebar.addEventListener('click', (event) => {
     const filterItem = event.target.closest('[data-filter]');
-    if (!filterItem) return;
-    setStatusFilter(filterItem.dataset.filter);
+    if (filterItem) {
+      setStatusFilter(filterItem.dataset.filter);
+      return;
+    }
+
+    const listItem = event.target.closest('[data-list]');
+    if (listItem) {
+      event.preventDefault();
+      const listId = listItem.dataset.list;
+      setListFilter(activeFilters.list === listId ? null : listId);
+      return;
+    }
   });
 
   const addBtns = document.querySelectorAll('.content__add-btn');
