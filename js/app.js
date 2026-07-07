@@ -185,21 +185,69 @@ function createTaskElement(task) {
   return li;
 }
 
+// ===== EMPTY STATE =====
+
+const GROUP_LABELS = { today: 'today', tomorrow: 'tomorrow', thisWeek: 'this week' };
+
+function getEmptyMessage(groupKey) {
+  if (activeFilters.search) {
+    return { title: 'No tasks found.', hint: 'Try another keyword.' };
+  }
+  if (activeFilters.status === 'completed') {
+    return { title: 'No completed tasks yet.', hint: '\u2713 Complete a task to see it here.' };
+  }
+  if (activeFilters.status === 'active') {
+    return { title: 'No active tasks.', hint: 'All tasks are completed.' };
+  }
+  return { title: `No tasks for ${GROUP_LABELS[groupKey] || groupKey}.`, hint: null };
+}
+
+function createEmptyState(message) {
+  const li = document.createElement('li');
+  li.className = 'task-list-empty';
+  li.setAttribute('aria-live', 'polite');
+
+  const title = document.createElement('p');
+  title.className = 'task-list-empty__title';
+  title.textContent = message.title;
+  li.appendChild(title);
+
+  if (message.hint) {
+    const hint = document.createElement('p');
+    hint.className = 'task-list-empty__hint';
+    hint.textContent = message.hint;
+    li.appendChild(hint);
+  }
+
+  return li;
+}
+
 // ===== RENDERING =====
 
 function renderSections(groups) {
   const sections = document.querySelectorAll('.content__group');
+  const allEmpty = Object.values(groups).every((arr) => arr.length === 0);
 
-  sections.forEach((section) => {
+  sections.forEach((section, index) => {
     const groupKey = section.dataset.group;
     if (!groupKey) return;
 
     const listEl = section.querySelector('.content__task-list');
     listEl.innerHTML = '';
 
-    groups[groupKey].forEach((task) => {
-      listEl.appendChild(createTaskElement(task));
-    });
+    if (allEmpty && index > 0) {
+      section.hidden = true;
+      return;
+    }
+    section.hidden = false;
+
+    if (groups[groupKey].length === 0) {
+      listEl.appendChild(createEmptyState(getEmptyMessage(groupKey)));
+    } else {
+      groups[groupKey].forEach((task) => {
+        listEl.appendChild(createTaskElement(task));
+      });
+    }
   });
 }
 

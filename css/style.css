@@ -465,6 +465,27 @@ input {
   opacity: 0.8;
 }
 
+/* ===== EMPTY STATE (PR #4 — Sprint 7) ===== */
+
+.task-list-empty {
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+
+.task-list-empty__title {
+  font-size: var(--text-md);
+  color: var(--color-text-body);
+}
+
+.task-list-empty__hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-body);
+  opacity: 0.6;
+  margin-top: var(--space-1);
+}
+
+/* ===== VISUALLY HIDDEN ===== */
+
 .visually-hidden {
   position: absolute;
   width: 1px;
