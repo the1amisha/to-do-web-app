@@ -528,6 +528,12 @@ function attachEventListeners() {
   taskLists.forEach((list) => {
     list.addEventListener('click', handleTaskListClick);
   });
+
+  // Search: input event, no debounce
+  const searchInput = document.querySelector('[data-search]');
+  searchInput.addEventListener('input', () => {
+    setSearchFilter(searchInput.value);
+  });
 }
 
 // ===== INITIALIZATION =====
