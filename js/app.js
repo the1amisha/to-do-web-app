@@ -10,6 +10,13 @@ let undoState = {
   toast: null
 };
 
+let activeFilters = {
+  status: 'all',
+  list: null,
+  tag: null,
+  search: ''
+};
+
 // ===== STORAGE =====
 const STORAGE_KEY = 'todo_tasks';
 
@@ -196,8 +203,58 @@ function renderSections(groups) {
   });
 }
 
+// ===== FILTERING =====
+
 function getFilteredTasks() {
-  return tasks;
+  let visible = [...tasks];
+
+  if (activeFilters.status === 'active') {
+    visible = visible.filter((t) => !t.completed);
+  } else if (activeFilters.status === 'completed') {
+    visible = visible.filter((t) => t.completed);
+  }
+
+  if (activeFilters.list) {
+    visible = visible.filter((t) => t.list === activeFilters.list);
+  }
+
+  if (activeFilters.tag) {
+    visible = visible.filter((t) => t.tags?.includes(activeFilters.tag));
+  }
+
+  if (activeFilters.search) {
+    visible = visible.filter((t) => t.title.toLowerCase().includes(activeFilters.search));
+  }
+
+  return visible;
+}
+
+function setStatusFilter(status) {
+  activeFilters.status = status;
+  render();
+}
+
+function setListFilter(listId) {
+  activeFilters.list = listId;
+  render();
+}
+
+function setTagFilter(tag) {
+  activeFilters.tag = tag;
+  render();
+}
+
+function setSearchFilter(query) {
+  activeFilters.search = query.trim().toLowerCase();
+  render();
+}
+
+function clearFilters() {
+  activeFilters.status = 'all';
+  activeFilters.list = null;
+  activeFilters.tag = null;
+  activeFilters.search = '';
+  render();
 }
 
 function render() {
