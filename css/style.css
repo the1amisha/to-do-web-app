@@ -324,6 +324,12 @@ input {
   background-color: var(--color-bg-hover-2);
 }
 
+.task--selected {
+  background-color: var(--color-bg-hover-2);
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: -2px;
+}
+
 .task--removing {
   opacity: 0;
   transform: translateX(12px);

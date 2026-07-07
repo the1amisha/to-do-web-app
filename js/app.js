@@ -7,6 +7,7 @@ let lists = [
   { id: 'work', name: 'Work', color: '#D3968C' }
 ];
 const listMap = new Map(lists.map((l) => [l.id, l]));
+let selectedTaskId = null;
 let activeAddForm = null;
 let undoState = {
   task: null,
@@ -191,6 +192,7 @@ function createTaskElement(task) {
   const li = document.createElement('li');
   li.className = 'task';
   if (task.completed) li.classList.add('task--completed');
+  if (task.id === selectedTaskId) li.classList.add('task--selected');
   li.dataset.id = task.id;
 
   li.append(
@@ -373,6 +375,23 @@ function renderFilterState() {
   });
 }
 
+// ===== SELECTION =====
+
+function setSelectedTask(id) {
+  if (findTaskIndex(id) === -1) return;
+  selectedTaskId = id;
+  render();
+}
+
+function clearSelectedTask() {
+  selectedTaskId = null;
+  render();
+}
+
+function getSelectedTask() {
+  return tasks.find((t) => t.id === selectedTaskId) || null;
+}
+
 // ===== TASK DATA =====
 
 function resolveDueDate(groupKey) {
@@ -517,6 +536,7 @@ function handleTaskListClick(event) {
     if (index === -1) return;
 
     animateTaskRemoval(taskEl, () => {
+      if (id === selectedTaskId) clearSelectedTask();
       const deletedTask = deleteTask(index);
       storeUndoState(deletedTask, index);
       saveTasks();
@@ -524,6 +544,13 @@ function handleTaskListClick(event) {
       showUndoToast();
     });
     return;
+  }
+
+  // Select: click anywhere else on the task row
+  const taskEl = event.target.closest('.task');
+  if (taskEl) {
+    closeAddInput();
+    setSelectedTask(taskEl.dataset.id);
   }
 }
 
