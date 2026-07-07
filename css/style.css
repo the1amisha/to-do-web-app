@@ -15,6 +15,7 @@
   --color-bg-sidebar:     #F7F4D5;
   --color-bg-surface:     #FFFFFF;
   --color-bg-hover:       #d3958c87;
+  --color-bg-hover-2:       #1056664f;
   --color-bg-active:      #D3968C;
 
   --color-text-primary:   #0A3323;
@@ -313,7 +314,7 @@ input {
 }
 
 .task:hover {
-  background-color: var(--color-bg-hover);
+  background-color: var(--color-bg-hover-2);
 }
 
 .task--removing {
@@ -344,6 +345,11 @@ input {
   border-radius: var(--radius-sm);
   background-color: var(--color-bg-surface);
   transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.task__checkbox:focus-visible + .task__checkmark {
+ outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
 }
 
 .task__content {
@@ -377,7 +383,7 @@ input {
 
 .task__delete {
   font-size: var(--text-lg);
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
   flex-shrink: 0;
   line-height: 1;
   padding: var(--space-1);
@@ -386,13 +392,19 @@ input {
   transition: opacity 0.15s ease, color 0.15s ease;
 }
 
+.task__delete:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
 .task:hover .task__delete {
   opacity: 1;
 }
 
 .task__arrow {
   font-size: var(--text-lg);
-  color: var(--color-text-muted);
+  color: var(--color-text-primary);
   flex-shrink: 0;
   line-height: 1;
 }
@@ -402,11 +414,13 @@ input {
 .task--completed .task__title {
   text-decoration: line-through;
   opacity: 0.6;
+  transition: text-decoration-color 0.15s ease, opacity 0.15s ease;
 }
 
 .task--completed .task__checkmark {
   background-color: var(--color-bg-active);
   border-color: var(--color-bg-active);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 /* ===== UNDO TOAST (PR #5 — Delete + Undo) ===== */
