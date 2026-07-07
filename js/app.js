@@ -205,6 +205,8 @@ function renderSections(groups) {
 
 // ===== FILTERING =====
 
+const VALID_STATUSES = ['all', 'active', 'completed'];
+
 function getFilteredTasks() {
   let visible = [...tasks];
 
@@ -230,6 +232,7 @@ function getFilteredTasks() {
 }
 
 function setStatusFilter(status) {
+  if (!VALID_STATUSES.includes(status)) return;
   activeFilters.status = status;
   render();
 }
@@ -261,6 +264,17 @@ function render() {
   const visibleTasks = getFilteredTasks();
   const groups = groupByDate(visibleTasks);
   renderSections(groups);
+  renderFilterState();
+}
+
+// ===== FILTER UI =====
+
+function renderFilterState() {
+  const items = document.querySelectorAll('[data-filter]');
+  items.forEach((item) => {
+    const isActive = item.dataset.filter === activeFilters.status;
+    item.classList.toggle('sidebar__item--active', isActive);
+  });
 }
 
 // ===== TASK DATA =====
@@ -494,6 +508,14 @@ function showAddInput(section) {
 // ===== EVENT LISTENERS =====
 
 function attachEventListeners() {
+  // Sidebar filter delegation
+  const sidebar = document.querySelector('.sidebar');
+  sidebar.addEventListener('click', (event) => {
+    const filterItem = event.target.closest('[data-filter]');
+    if (!filterItem) return;
+    setStatusFilter(filterItem.dataset.filter);
+  });
+
   const addBtns = document.querySelectorAll('.content__add-btn');
   addBtns.forEach((btn) => {
     const section = btn.closest('.content__group');

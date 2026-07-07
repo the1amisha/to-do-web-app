@@ -19,7 +19,7 @@
 
       <form class="sidebar__search">
         <label for="search" class="visually-hidden">Search Tasks</label>
-        <input id="search" type="text" placeholder="Search">
+        <input id="search" type="text" placeholder="Search" data-search>
       </form>
 
       <!-- TASKS Navigation -->
@@ -27,10 +27,9 @@
         <h3 class="sidebar__section-title">TASKS</h3>
         <nav>
           <ul class="sidebar__nav">
-            <li class="sidebar__item"><a href="#">Upcoming</a></li>
-            <li class="sidebar__item"><a href="#">Today</a></li>
-            <li class="sidebar__item"><a href="#">Calendar</a></li>
-            <li class="sidebar__item"><a href="#">Sticky Wall</a></li>
+            <li class="sidebar__item sidebar__item--active" data-filter="all"><button type="button">All Tasks</button></li>
+            <li class="sidebar__item" data-filter="active"><button type="button">Active</button></li>
+            <li class="sidebar__item" data-filter="completed"><button type="button">Completed</button></li>
           </ul>
         </nav>
       </section>
