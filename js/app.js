@@ -333,6 +333,7 @@ function render() {
   const groups = groupByDate(visibleTasks);
   renderSections(groups);
   renderFilterState();
+  renderDetailPanel();
 }
 
 // ===== SIDEBAR LISTS =====
@@ -373,6 +374,77 @@ function renderFilterState() {
   document.querySelectorAll('[data-list]').forEach((item) => {
     item.classList.toggle('sidebar__item--active', item.dataset.list === activeFilters.list);
   });
+}
+
+// ===== DETAIL PANEL =====
+
+function createDetailField(label, value) {
+  const div = document.createElement('div');
+  div.className = 'detail-panel__field';
+
+  const dt = document.createElement('dt');
+  dt.className = 'detail-panel__label';
+  dt.textContent = label;
+
+  const dd = document.createElement('dd');
+  dd.className = 'detail-panel__value';
+  dd.textContent = value;
+
+  div.append(dt, dd);
+  return div;
+}
+
+function renderDetailPanel() {
+  const panel = document.querySelector('.detail-panel');
+  const task = getSelectedTask();
+
+  if (!task) {
+    panel.hidden = true;
+    panel.innerHTML = '';
+    return;
+  }
+
+  panel.hidden = false;
+  panel.innerHTML = '';
+
+  const header = document.createElement('header');
+  header.className = 'detail-panel__header';
+
+  const title = document.createElement('h2');
+  title.className = 'detail-panel__title';
+  title.textContent = task.title;
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'detail-panel__close';
+  closeBtn.type = 'button';
+  closeBtn.textContent = '\u00d7';
+  closeBtn.setAttribute('aria-label', 'Close panel');
+  closeBtn.addEventListener('click', clearSelectedTask);
+
+  header.append(title, closeBtn);
+  panel.appendChild(header);
+
+  const body = document.createElement('dl');
+  body.className = 'detail-panel__body';
+
+  if (task.dueDate) {
+    body.appendChild(createDetailField('Due Date', formatDateLabel(task.dueDate)));
+  }
+
+  if (task.listId) {
+    const list = listMap.get(task.listId);
+    if (list) body.appendChild(createDetailField('List', list.name));
+  }
+
+  if (task.tags && task.tags.length > 0) {
+    body.appendChild(createDetailField('Tags', task.tags.join(', ')));
+  }
+
+  if (task.subtasks && task.subtasks.length > 0) {
+    body.appendChild(createDetailField('Subtasks', task.subtasks.length + ' subtasks'));
+  }
+
+  panel.appendChild(body);
 }
 
 // ===== SELECTION =====
@@ -536,7 +608,7 @@ function handleTaskListClick(event) {
     if (index === -1) return;
 
     animateTaskRemoval(taskEl, () => {
-      if (id === selectedTaskId) clearSelectedTask();
+      if (id === selectedTaskId) selectedTaskId = null;
       const deletedTask = deleteTask(index);
       storeUndoState(deletedTask, index);
       saveTasks();
@@ -666,6 +738,13 @@ function attachEventListeners() {
   const searchInput = document.querySelector('[data-search]');
   searchInput.addEventListener('input', () => {
     setSearchFilter(searchInput.value);
+  });
+
+  // Escape clears selection (closes detail panel)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && selectedTaskId) {
+      clearSelectedTask();
+    }
   });
 }
 
