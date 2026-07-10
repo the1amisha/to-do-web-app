@@ -401,18 +401,37 @@ function renderDetailPanel() {
   if (!task) {
     panel.hidden = true;
     panel.innerHTML = '';
+    delete panel.dataset.taskId;
     return;
   }
 
+  // Skip rebuild if same task — preserves input focus, cursor, and unsaved edits
+  if (panel.dataset.taskId === task.id) return;
+
   panel.hidden = false;
   panel.innerHTML = '';
+  panel.dataset.taskId = task.id;
 
   const header = document.createElement('header');
   header.className = 'detail-panel__header';
 
-  const title = document.createElement('h2');
-  title.className = 'detail-panel__title';
-  title.textContent = task.title;
+  const titleInput = document.createElement('input');
+  titleInput.type = 'text';
+  titleInput.className = 'detail-panel__title-input';
+  titleInput.value = task.title;
+  titleInput.setAttribute('aria-label', 'Task title');
+
+  titleInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!updateTaskTitle(titleInput.value)) {
+        titleInput.select();
+      }
+    }
+    if (e.key === 'Escape') {
+      clearSelectedTask();
+    }
+  });
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'detail-panel__close';
@@ -421,7 +440,7 @@ function renderDetailPanel() {
   closeBtn.setAttribute('aria-label', 'Close panel');
   closeBtn.addEventListener('click', clearSelectedTask);
 
-  header.append(title, closeBtn);
+  header.append(titleInput, closeBtn);
   panel.appendChild(header);
 
   const body = document.createElement('dl');
@@ -462,6 +481,17 @@ function clearSelectedTask() {
 
 function getSelectedTask() {
   return tasks.find((t) => t.id === selectedTaskId) || null;
+}
+
+// ===== TASK MUTATION =====
+
+function updateTaskTitle(newTitle) {
+  const task = getSelectedTask();
+  if (!task || !validateTitle(newTitle)) return false;
+  task.title = newTitle;
+  saveTasks();
+  render();
+  return true;
 }
 
 // ===== TASK DATA =====

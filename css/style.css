@@ -514,6 +514,22 @@ input {
   color: var(--color-text-primary);
 }
 
+.detail-panel__title-input {
+  flex: 1;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  transition: border-color 0.15s ease;
+}
+
+.detail-panel__title-input:focus {
+  border-color: var(--color-border);
+}
+
 .detail-panel__close {
   font-size: var(--text-lg);
   color: var(--color-text-primary);
