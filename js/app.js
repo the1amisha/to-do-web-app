@@ -105,6 +105,13 @@ function groupByDate(taskList) {
 
 // ===== DOM BUILDERS =====
 
+function createTagChip(tag) {
+  const span = document.createElement('span');
+  span.className = 'tag-chip';
+  span.textContent = tag;
+  return span;
+}
+
 function createCheckbox(task) {
   const label = document.createElement('label');
   label.className = 'task__check';
@@ -146,6 +153,22 @@ function createMetadata(task) {
       listSpan.textContent = list.name;
       metaItems.push(listSpan);
     }
+  }
+
+  if (task.tags && task.tags.length > 0) {
+    const MAX_VISIBLE_TAGS = 2;
+    const tagContainer = document.createElement('span');
+    tagContainer.className = 'task__tags';
+    task.tags.slice(0, MAX_VISIBLE_TAGS).forEach((tag) => {
+      tagContainer.appendChild(createTagChip(tag));
+    });
+    if (task.tags.length > MAX_VISIBLE_TAGS) {
+      const overflow = document.createElement('span');
+      overflow.className = 'tag-chip tag-chip--overflow';
+      overflow.textContent = '+' + (task.tags.length - MAX_VISIBLE_TAGS);
+      tagContainer.appendChild(overflow);
+    }
+    metaItems.push(tagContainer);
   }
 
   if (metaItems.length === 0) return null;
@@ -525,7 +548,22 @@ function renderDetailPanel() {
   body.appendChild(field);
 
   if (task.tags && task.tags.length > 0) {
-    body.appendChild(createDetailField('Tags', task.tags.join(', ')));
+    const field = document.createElement('div');
+    field.className = 'detail-panel__field';
+
+    const dt = document.createElement('dt');
+    dt.className = 'detail-panel__label';
+    dt.textContent = 'Tags';
+
+    const dd = document.createElement('dd');
+    dd.className = 'detail-panel__tags';
+
+    task.tags.forEach((tag) => {
+      dd.appendChild(createTagChip(tag));
+    });
+
+    field.append(dt, dd);
+    body.appendChild(field);
   }
 
   if (task.subtasks && task.subtasks.length > 0) {

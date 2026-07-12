@@ -596,6 +596,34 @@ input {
   border-color: var(--color-border);
 }
 
+/* ===== TAG CHIP (Sprint 11 — PR #1) ===== */
+
+.tag-chip {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  background-color: var(--color-bg-hover-2);
+  color: var(--color-text-body);
+}
+
+.tag-chip--overflow {
+  background-color: transparent;
+  opacity: 0.6;
+}
+
+.task__tags {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.detail-panel__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
 /* ===== VISUALLY HIDDEN ===== */
 
 .visually-hidden {
