@@ -630,6 +630,11 @@ input {
   opacity: 1;
 }
 
+.tag-chip--active {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-inverse);
+}
+
 .tag-chip--overflow {
   background-color: transparent;
   opacity: 0.6;

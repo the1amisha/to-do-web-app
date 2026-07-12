@@ -110,6 +110,10 @@ function createTagChip(tag, options = {}) {
   span.className = 'tag-chip';
   span.textContent = tag;
 
+  if (options.active) {
+    span.classList.add('tag-chip--active');
+  }
+
   if (options.removable) {
     const removeBtn = document.createElement('button');
     removeBtn.className = 'tag-chip__remove';
@@ -170,7 +174,8 @@ function createMetadata(task) {
     const tagContainer = document.createElement('span');
     tagContainer.className = 'task__tags';
     task.tags.slice(0, MAX_VISIBLE_TAGS).forEach((tag) => {
-      const chip = createTagChip(tag);
+      const isActive = activeFilters.tag && tag.toLowerCase() === activeFilters.tag.toLowerCase();
+      const chip = createTagChip(tag, { active: isActive });
       chip.addEventListener('click', () => {
         setTagFilter(activeFilters.tag === tag ? null : tag);
       });
@@ -577,7 +582,8 @@ function renderDetailPanel() {
 
   if (task.tags) {
     task.tags.forEach((tag) => {
-      const chip = createTagChip(tag, { removable: true });
+      const isActive = activeFilters.tag && tag.toLowerCase() === activeFilters.tag.toLowerCase();
+      const chip = createTagChip(tag, { removable: true, active: isActive });
       chip.querySelector('.tag-chip__remove')
           .addEventListener('click', () => removeTag(tag));
       tagsContainer.appendChild(chip);
