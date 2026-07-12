@@ -664,12 +664,39 @@ input {
 .filter-chip {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-pill);
   font-size: var(--text-sm);
   background-color: var(--color-bg-hover-2);
   color: var(--color-text-body);
   white-space: nowrap;
+}
+
+.filter-chip__text {
+  display: inline-flex;
+  align-items: center;
+}
+
+.filter-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: 1;
+  opacity: 0.5;
+}
+
+.filter-chip:hover .filter-chip__remove {
+  opacity: 1;
+}
+
+.filter-chip__remove:hover {
+  opacity: 1;
 }
 
 .filter-summary__clear {

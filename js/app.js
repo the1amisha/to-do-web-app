@@ -416,10 +416,24 @@ function hasActiveFilters() {
     || activeFilters.search !== '';
 }
 
-function createFilterChip(label, icon) {
+function createFilterChip(label, icon, options = {}) {
   const span = document.createElement('span');
   span.className = 'filter-chip';
-  span.textContent = icon + ' ' + label;
+
+  const text = document.createElement('span');
+  text.className = 'filter-chip__text';
+  text.textContent = icon + ' ' + label;
+  span.appendChild(text);
+
+  if (options.removable) {
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'filter-chip__remove';
+    removeBtn.type = 'button';
+    removeBtn.textContent = '\u00d7';
+    removeBtn.setAttribute('aria-label', 'Remove ' + label + ' filter');
+    span.appendChild(removeBtn);
+  }
+
   return span;
 }
 
@@ -445,21 +459,33 @@ function renderFilterSummary() {
 
   if (activeFilters.status !== 'all') {
     const statusLabel = activeFilters.status === 'active' ? 'Active' : 'Completed';
-    chips.appendChild(createFilterChip(statusLabel, '\u2713'));
+    const chip = createFilterChip(statusLabel, '\u2713', { removable: true });
+    chip.querySelector('.filter-chip__remove')
+        .addEventListener('click', () => setStatusFilter('all'));
+    chips.appendChild(chip);
   }
 
   if (activeFilters.list) {
     const list = listMap.get(activeFilters.list);
     const listLabel = list ? list.name : activeFilters.list;
-    chips.appendChild(createFilterChip(listLabel, '\u2B24'));
+    const chip = createFilterChip(listLabel, '\u2B24', { removable: true });
+    chip.querySelector('.filter-chip__remove')
+        .addEventListener('click', () => setListFilter(null));
+    chips.appendChild(chip);
   }
 
   if (activeFilters.tag) {
-    chips.appendChild(createFilterChip(activeFilters.tag, '#'));
+    const chip = createFilterChip(activeFilters.tag, '#', { removable: true });
+    chip.querySelector('.filter-chip__remove')
+        .addEventListener('click', () => setTagFilter(null));
+    chips.appendChild(chip);
   }
 
   if (activeFilters.search) {
-    chips.appendChild(createFilterChip(activeFilters.search, '\u223C'));
+    const chip = createFilterChip(activeFilters.search, '\u223C', { removable: true });
+    chip.querySelector('.filter-chip__remove')
+        .addEventListener('click', () => setSearchFilter(''));
+    chips.appendChild(chip);
   }
 
   container.appendChild(chips);
