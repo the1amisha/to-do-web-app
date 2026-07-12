@@ -547,24 +547,62 @@ function renderDetailPanel() {
   field.append(dt, dd);
   body.appendChild(field);
 
-  if (task.tags && task.tags.length > 0) {
-    const field = document.createElement('div');
-    field.className = 'detail-panel__field';
+  // Tags — always rendered so any task can receive tags
+  const tagsField = document.createElement('div');
+  tagsField.className = 'detail-panel__field';
 
-    const dt = document.createElement('dt');
-    dt.className = 'detail-panel__label';
-    dt.textContent = 'Tags';
+  const tagsDt = document.createElement('dt');
+  tagsDt.className = 'detail-panel__label';
+  tagsDt.textContent = 'Tags';
 
-    const dd = document.createElement('dd');
-    dd.className = 'detail-panel__tags';
+  const tagsDd = document.createElement('dd');
+  tagsDd.className = 'detail-panel__value';
 
-    task.tags.forEach((tag) => {
-      dd.appendChild(createTagChip(tag));
-    });
+  const tagsContainer = document.createElement('div');
+  tagsContainer.className = 'detail-panel__tags';
 
-    field.append(dt, dd);
-    body.appendChild(field);
+  if (task.tags) {
+    task.tags.forEach((tag) => tagsContainer.appendChild(createTagChip(tag)));
   }
+
+  tagsDd.appendChild(tagsContainer);
+
+  const addTagBtn = document.createElement('button');
+  addTagBtn.className = 'detail-panel__tag-add';
+  addTagBtn.type = 'button';
+  addTagBtn.textContent = '+ Add Tag';
+
+  function showTagInput() {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'detail-panel__tag-input';
+    input.placeholder = 'Add tag...';
+    input.setAttribute('aria-label', 'Add tag');
+
+    tagsDd.replaceChild(input, addTagBtn);
+    input.focus();
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const added = addTag(input.value);
+        if (added.length > 0) {
+          input.value = '';
+        } else {
+          input.select();
+        }
+      }
+      if (e.key === 'Escape') {
+        tagsDd.replaceChild(addTagBtn, input);
+      }
+    });
+  }
+
+  addTagBtn.addEventListener('click', showTagInput);
+  tagsDd.appendChild(addTagBtn);
+
+  tagsField.append(tagsDt, tagsDd);
+  body.appendChild(tagsField);
 
   if (task.subtasks && task.subtasks.length > 0) {
     body.appendChild(createDetailField('Subtasks', task.subtasks.length + ' subtasks'));
@@ -619,6 +657,28 @@ function updateTaskList(newListId) {
   return true;
 }
 
+function addTag(rawInput) {
+  const task = getSelectedTask();
+  if (!task) return [];
+
+  if (!task.tags) task.tags = [];
+
+  const candidates = rawInput
+    .split(',')
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0);
+
+  if (candidates.length === 0) return [];
+
+  const newTags = removeDuplicate(candidates, task.tags);
+  if (newTags.length === 0) return [];
+
+  task.tags.push(...newTags);
+  saveTasks();
+  render();
+  return newTags;
+}
+
 // ===== TASK DATA =====
 
 function resolveDueDate(groupKey) {
@@ -632,6 +692,11 @@ function resolveDueDate(groupKey) {
 
 function validateTitle(title) {
   return title.trim().length > 0;
+}
+
+function removeDuplicate(newTags, existingTags) {
+  const lower = existingTags.map((t) => t.toLowerCase());
+  return newTags.filter((tag) => !lower.includes(tag.toLowerCase()));
 }
 
 function createTask(title, options = {}) {

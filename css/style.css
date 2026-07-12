@@ -624,6 +624,33 @@ input {
   gap: var(--space-1);
 }
 
+.detail-panel__tag-add {
+  display: inline-block;
+  font-size: var(--text-sm);
+  color: var(--color-text-body);
+  opacity: 0.6;
+  padding: var(--space-1) 0;
+  transition: opacity 0.15s ease;
+}
+
+.detail-panel__tag-add:hover {
+  opacity: 1;
+}
+
+.detail-panel__tag-input {
+  width: 100%;
+  padding: var(--space-1);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  transition: border-color 0.15s ease;
+}
+
+.detail-panel__tag-input:focus {
+  border-color: var(--color-border);
+}
+
 /* ===== VISUALLY HIDDEN ===== */
 
 .visually-hidden {
