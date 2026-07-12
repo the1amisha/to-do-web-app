@@ -170,7 +170,11 @@ function createMetadata(task) {
     const tagContainer = document.createElement('span');
     tagContainer.className = 'task__tags';
     task.tags.slice(0, MAX_VISIBLE_TAGS).forEach((tag) => {
-      tagContainer.appendChild(createTagChip(tag));
+      const chip = createTagChip(tag);
+      chip.addEventListener('click', () => {
+        setTagFilter(activeFilters.tag === tag ? null : tag);
+      });
+      tagContainer.appendChild(chip);
     });
     if (task.tags.length > MAX_VISIBLE_TAGS) {
       const overflow = document.createElement('span');
@@ -322,7 +326,7 @@ function getFilteredTasks() {
   }
 
   if (activeFilters.tag) {
-    visible = visible.filter((t) => t.tags?.includes(activeFilters.tag));
+    visible = visible.filter((t) => t.tags?.some((tag) => tag.toLowerCase() === activeFilters.tag.toLowerCase()));
   }
 
   if (activeFilters.search) {
