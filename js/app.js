@@ -371,6 +371,7 @@ function clearFilters() {
 }
 
 function render() {
+  renderFilterSummary();
   const visibleTasks = getFilteredTasks();
   const groups = groupByDate(visibleTasks);
   renderSections(groups);
@@ -407,6 +408,69 @@ function renderLists() {
 }
 
 // ===== FILTER UI =====
+
+function hasActiveFilters() {
+  return activeFilters.status !== 'all'
+    || activeFilters.list !== null
+    || activeFilters.tag !== null
+    || activeFilters.search !== '';
+}
+
+function createFilterChip(label, icon) {
+  const span = document.createElement('span');
+  span.className = 'filter-chip';
+  span.textContent = icon + ' ' + label;
+  return span;
+}
+
+function renderFilterSummary() {
+  const container = document.querySelector('[data-filter-summary]');
+
+  if (!hasActiveFilters()) {
+    container.hidden = true;
+    container.innerHTML = '';
+    return;
+  }
+
+  container.hidden = false;
+  container.innerHTML = '';
+
+  const label = document.createElement('span');
+  label.className = 'filter-summary__label';
+  label.textContent = 'Showing';
+  container.appendChild(label);
+
+  const chips = document.createElement('div');
+  chips.className = 'filter-summary__chips';
+
+  if (activeFilters.status !== 'all') {
+    const statusLabel = activeFilters.status === 'active' ? 'Active' : 'Completed';
+    chips.appendChild(createFilterChip(statusLabel, '\u2713'));
+  }
+
+  if (activeFilters.list) {
+    const list = listMap.get(activeFilters.list);
+    const listLabel = list ? list.name : activeFilters.list;
+    chips.appendChild(createFilterChip(listLabel, '\u2B24'));
+  }
+
+  if (activeFilters.tag) {
+    chips.appendChild(createFilterChip(activeFilters.tag, '#'));
+  }
+
+  if (activeFilters.search) {
+    chips.appendChild(createFilterChip(activeFilters.search, '\u223C'));
+  }
+
+  container.appendChild(chips);
+
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.className = 'filter-summary__clear';
+  clearBtn.textContent = 'Clear All';
+  clearBtn.addEventListener('click', clearFilters);
+  container.appendChild(clearBtn);
+}
 
 function renderFilterState() {
   document.querySelectorAll('[data-filter]').forEach((item) => {
