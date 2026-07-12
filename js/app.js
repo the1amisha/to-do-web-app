@@ -105,10 +105,20 @@ function groupByDate(taskList) {
 
 // ===== DOM BUILDERS =====
 
-function createTagChip(tag) {
+function createTagChip(tag, options = {}) {
   const span = document.createElement('span');
   span.className = 'tag-chip';
   span.textContent = tag;
+
+  if (options.removable) {
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'tag-chip__remove';
+    removeBtn.type = 'button';
+    removeBtn.textContent = '\u00d7';
+    removeBtn.setAttribute('aria-label', 'Remove tag ' + tag);
+    span.appendChild(removeBtn);
+  }
+
   return span;
 }
 
@@ -562,7 +572,12 @@ function renderDetailPanel() {
   tagsContainer.className = 'detail-panel__tags';
 
   if (task.tags) {
-    task.tags.forEach((tag) => tagsContainer.appendChild(createTagChip(tag)));
+    task.tags.forEach((tag) => {
+      const chip = createTagChip(tag, { removable: true });
+      chip.querySelector('.tag-chip__remove')
+          .addEventListener('click', () => removeTag(tag));
+      tagsContainer.appendChild(chip);
+    });
   }
 
   tagsDd.appendChild(tagsContainer);
@@ -677,6 +692,17 @@ function addTag(rawInput) {
   saveTasks();
   render();
   return newTags;
+}
+
+function removeTag(tagName) {
+  const task = getSelectedTask();
+  if (!task || !task.tags) return false;
+  const index = task.tags.findIndex((t) => t.toLowerCase() === tagName.toLowerCase());
+  if (index === -1) return false;
+  task.tags.splice(index, 1);
+  saveTasks();
+  render();
+  return true;
 }
 
 // ===== TASK DATA =====

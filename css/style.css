@@ -599,12 +599,35 @@ input {
 /* ===== TAG CHIP (Sprint 11 — PR #1) ===== */
 
 .tag-chip {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-pill);
   font-size: var(--text-sm);
   background-color: var(--color-bg-hover-2);
   color: var(--color-text-body);
+}
+
+.tag-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-3);
+  height: var(--space-3);
+  margin-left: var(--space-1);
+  font-size: var(--text-sm);
+  line-height: 1;
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tag-chip:hover .tag-chip__remove {
+  opacity: 0.6;
+}
+
+.tag-chip__remove:hover {
+  opacity: 1;
 }
 
 .tag-chip--overflow {
