@@ -405,8 +405,10 @@ function renderDetailPanel() {
     return;
   }
 
-  // Skip rebuild if same task — preserves input focus, cursor, and unsaved edits
-  if (panel.dataset.taskId === task.id) return;
+  // Skip rebuild if same task AND panel holds focus.
+  // Preserves input focus, cursor, and unsaved edits while the user is actively editing.
+  // If focus is elsewhere (external code changed this task's data), rebuild to stay in sync.
+  if (panel.dataset.taskId === task.id && panel.contains(document.activeElement)) return;
 
   panel.hidden = false;
   panel.innerHTML = '';
@@ -447,7 +449,37 @@ function renderDetailPanel() {
   body.className = 'detail-panel__body';
 
   if (task.dueDate) {
-    body.appendChild(createDetailField('Due Date', formatDateLabel(task.dueDate)));
+    const field = document.createElement('div');
+    field.className = 'detail-panel__field';
+
+    const dt = document.createElement('dt');
+    dt.className = 'detail-panel__label';
+    dt.textContent = 'Due Date';
+
+    const dd = document.createElement('dd');
+    dd.className = 'detail-panel__value';
+
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.className = 'detail-panel__date-input';
+    dateInput.value = task.dueDate;
+    dateInput.setAttribute('aria-label', 'Due date');
+
+    dateInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!updateTaskDueDate(dateInput.value)) {
+          dateInput.focus();
+        }
+      }
+      if (e.key === 'Escape') {
+        clearSelectedTask();
+      }
+    });
+
+    dd.appendChild(dateInput);
+    field.append(dt, dd);
+    body.appendChild(field);
   }
 
   if (task.listId) {
@@ -489,6 +521,15 @@ function updateTaskTitle(newTitle) {
   const task = getSelectedTask();
   if (!task || !validateTitle(newTitle)) return false;
   task.title = newTitle;
+  saveTasks();
+  render();
+  return true;
+}
+
+function updateTaskDueDate(newDueDate) {
+  const task = getSelectedTask();
+  if (!task || !newDueDate) return false;
+  task.dueDate = newDueDate;
   saveTasks();
   render();
   return true;
