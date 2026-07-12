@@ -482,10 +482,47 @@ function renderDetailPanel() {
     body.appendChild(field);
   }
 
-  if (task.listId) {
-    const list = listMap.get(task.listId);
-    if (list) body.appendChild(createDetailField('List', list.name));
-  }
+  const field = document.createElement('div');
+  field.className = 'detail-panel__field';
+
+  const dt = document.createElement('dt');
+  dt.className = 'detail-panel__label';
+  dt.textContent = 'List';
+
+  const dd = document.createElement('dd');
+  dd.className = 'detail-panel__value';
+
+  const select = document.createElement('select');
+  select.className = 'detail-panel__list-select';
+  select.setAttribute('aria-label', 'Task list');
+
+  const noneOpt = document.createElement('option');
+  noneOpt.value = '';
+  noneOpt.textContent = 'None';
+  if (!task.listId) noneOpt.selected = true;
+  select.appendChild(noneOpt);
+
+  lists.forEach((list) => {
+    const opt = document.createElement('option');
+    opt.value = list.id;
+    opt.textContent = list.name;
+    if (task.listId === list.id) opt.selected = true;
+    select.appendChild(opt);
+  });
+
+  select.addEventListener('change', () => {
+    updateTaskList(select.value);
+  });
+
+  select.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      clearSelectedTask();
+    }
+  });
+
+  dd.appendChild(select);
+  field.append(dt, dd);
+  body.appendChild(field);
 
   if (task.tags && task.tags.length > 0) {
     body.appendChild(createDetailField('Tags', task.tags.join(', ')));
@@ -530,6 +567,15 @@ function updateTaskDueDate(newDueDate) {
   const task = getSelectedTask();
   if (!task || !newDueDate) return false;
   task.dueDate = newDueDate;
+  saveTasks();
+  render();
+  return true;
+}
+
+function updateTaskList(newListId) {
+  const task = getSelectedTask();
+  if (!task) return false;
+  task.listId = newListId || null;
   saveTasks();
   render();
   return true;
