@@ -39,6 +39,11 @@ export function validateTitle(title) {
 }
 
 export function removeDuplicate(newTags, existingTags) {
-  const lower = existingTags.map((t) => t.toLowerCase());
-  return newTags.filter((tag) => !lower.includes(tag.toLowerCase()));
+  const seen = existingTags.map((t) => t.toLowerCase());
+  return newTags.filter((tag) => {
+    const lower = tag.toLowerCase();
+    if (seen.includes(lower)) return false;
+    seen.push(lower);
+    return true;
+  });
 }
