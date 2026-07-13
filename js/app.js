@@ -1,6 +1,7 @@
 // app.js — To-Do List Application
 
 import { getDateBoundaries, resolveDueDate, validateTitle, removeDuplicate } from './utils.js';
+import { VALID_STATUSES, hasActiveFilters, getFilteredTasks } from './filters.js';
 
 // ===== STATE =====
 let tasks = [];
@@ -235,7 +236,7 @@ function createTaskElement(task) {
 const GROUP_LABELS = { today: 'today', tomorrow: 'tomorrow', thisWeek: 'this week' };
 
 function getEmptyMessage(groupKey) {
-  if (hasActiveFilters()) {
+  if (hasActiveFilters(activeFilters)) {
     return { title: 'No tasks match your filters.', hint: 'Try removing one or more filters above.' };
   }
   return { title: `No tasks for ${GROUP_LABELS[groupKey] || groupKey}.`, hint: null };
@@ -292,32 +293,6 @@ function renderSections(groups) {
 
 // ===== FILTERING =====
 
-const VALID_STATUSES = ['all', 'active', 'completed'];
-
-function getFilteredTasks() {
-  let visible = [...tasks];
-
-  if (activeFilters.status === 'active') {
-    visible = visible.filter((t) => !t.completed);
-  } else if (activeFilters.status === 'completed') {
-    visible = visible.filter((t) => t.completed);
-  }
-
-  if (activeFilters.list) {
-    visible = visible.filter((t) => t.listId === activeFilters.list);
-  }
-
-  if (activeFilters.tag) {
-    visible = visible.filter((t) => t.tags?.some((tag) => tag.toLowerCase() === activeFilters.tag.toLowerCase()));
-  }
-
-  if (activeFilters.search) {
-    visible = visible.filter((t) => t.title.toLowerCase().includes(activeFilters.search));
-  }
-
-  return visible;
-}
-
 function setStatusFilter(status) {
   if (!VALID_STATUSES.includes(status)) return;
   activeFilters.status = status;
@@ -349,7 +324,7 @@ function clearFilters() {
 
 function render() {
   renderFilterSummary();
-  const visibleTasks = getFilteredTasks();
+  const visibleTasks = getFilteredTasks(tasks, activeFilters);
   const groups = groupByDate(visibleTasks);
   renderSections(groups);
   renderFilterState();
@@ -386,13 +361,6 @@ function renderLists() {
 
 // ===== FILTER UI =====
 
-function hasActiveFilters() {
-  return activeFilters.status !== 'all'
-    || activeFilters.list !== null
-    || activeFilters.tag !== null
-    || activeFilters.search !== '';
-}
-
 function createFilterChip(label, icon, options = {}) {
   const span = document.createElement('span');
   span.className = 'filter-chip';
@@ -417,7 +385,7 @@ function createFilterChip(label, icon, options = {}) {
 function renderFilterSummary() {
   const container = document.querySelector('[data-filter-summary]');
 
-  if (!hasActiveFilters()) {
+  if (!hasActiveFilters(activeFilters)) {
     container.hidden = true;
     container.innerHTML = '';
     return;
