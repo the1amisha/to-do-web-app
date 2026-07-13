@@ -17,11 +17,12 @@
   --color-bg-hover:       #64A8E5;
   --color-bg-hover-2:     #D3C399;
   --color-bg-active:      #D3C399;
+  --color-bg-muted:       #bed7f4;
 
   --color-text-primary:   #4b3c29;
   --color-text-body:      #7A6142;
   --color-text-secondary: #C7D428;
-  --color-text-muted:     #F8B77C;
+  --color-text-muted:     #64A8E5;
   --color-text-inverse:   #FFFFFF;
 
   --color-border:         #C7D428;
@@ -634,7 +635,7 @@ input {
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-pill);
   font-size: var(--text-sm);
-  background-color: var(--color-bg-hover-2);
+  background-color: var(--color-bg-muted);
   color: var(--color-text-body);
 }
 
@@ -704,7 +705,7 @@ input {
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-pill);
   font-size: var(--text-sm);
-  background-color: var(--color-bg-hover-2);
+  background-color: var(--color-bg-muted);
   color: var(--color-text-body);
   white-space: nowrap;
 }
