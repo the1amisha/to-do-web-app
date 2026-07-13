@@ -1,5 +1,7 @@
 // app.js — To-Do List Application
 
+import { getDateBoundaries, resolveDueDate, validateTitle, removeDuplicate } from './utils.js';
+
 // ===== STATE =====
 let tasks = [];
 let lists = [
@@ -46,26 +48,6 @@ function loadTasks() {
 }
 
 // ===== DATE HELPERS =====
-function toDateStr(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-function getDateBoundaries() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const endOfWeek = new Date(today);
-  const daysUntilSunday = today.getDay() === 0 ? 0 : 7 - today.getDay();
-  endOfWeek.setDate(endOfWeek.getDate() + daysUntilSunday);
-
-  return { today, tomorrow, endOfWeek };
-}
 
 function formatDateLabel(dateStr) {
   const { today, tomorrow, endOfWeek } = getDateBoundaries();
@@ -792,24 +774,6 @@ function removeTag(tagName) {
 }
 
 // ===== TASK DATA =====
-
-function resolveDueDate(groupKey) {
-  const { today, tomorrow, endOfWeek } = getDateBoundaries();
-
-  if (groupKey === 'today') return toDateStr(today);
-  if (groupKey === 'tomorrow') return toDateStr(tomorrow);
-  if (groupKey === 'thisWeek') return toDateStr(endOfWeek);
-  return toDateStr(today);
-}
-
-function validateTitle(title) {
-  return title.trim().length > 0;
-}
-
-function removeDuplicate(newTags, existingTags) {
-  const lower = existingTags.map((t) => t.toLowerCase());
-  return newTags.filter((tag) => !lower.includes(tag.toLowerCase()));
-}
 
 function createTask(title, options = {}) {
   return {
