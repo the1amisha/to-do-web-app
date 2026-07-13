@@ -217,7 +217,8 @@ function createArrowButton() {
   const arrow = document.createElement('button');
   arrow.className = 'task__arrow';
   arrow.type = 'button';
-  arrow.textContent = '›';
+  arrow.textContent = '\u203A';
+  arrow.setAttribute('aria-label', 'View task details');
   return arrow;
 }
 
@@ -556,9 +557,6 @@ function renderDetailPanel() {
         titleInput.select();
       }
     }
-    if (e.key === 'Escape') {
-      clearSelectedTask();
-    }
   });
 
   const closeBtn = document.createElement('button');
@@ -598,9 +596,6 @@ function renderDetailPanel() {
           dateInput.focus();
         }
       }
-      if (e.key === 'Escape') {
-        clearSelectedTask();
-      }
     });
 
     dd.appendChild(dateInput);
@@ -638,12 +633,6 @@ function renderDetailPanel() {
 
   select.addEventListener('change', () => {
     updateTaskList(select.value);
-  });
-
-  select.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      clearSelectedTask();
-    }
   });
 
   dd.appendChild(select);
@@ -702,6 +691,7 @@ function renderDetailPanel() {
         }
       }
       if (e.key === 'Escape') {
+        e.stopPropagation();
         tagsDd.replaceChild(addTagBtn, input);
       }
     });
@@ -726,6 +716,8 @@ function setSelectedTask(id) {
   if (findTaskIndex(id) === -1) return;
   selectedTaskId = id;
   render();
+  const titleInput = document.querySelector('.detail-panel__title-input');
+  if (titleInput) titleInput.focus();
 }
 
 function clearSelectedTask() {
@@ -1080,9 +1072,14 @@ function attachEventListeners() {
     setSearchFilter(searchInput.value);
   });
 
-  // Escape clears selection (closes detail panel)
+  // Escape: first blur the focused control, then close panel
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && selectedTaskId) {
+    if (e.key !== 'Escape' || !selectedTaskId) return;
+
+    const panel = document.querySelector('.detail-panel');
+    if (panel.contains(document.activeElement)) {
+      document.activeElement.blur();
+    } else {
       clearSelectedTask();
     }
   });

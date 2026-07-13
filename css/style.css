@@ -161,6 +161,11 @@ input {
   color: var(--color-text-body);
 }
 
+.sidebar__search input:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: -2px;
+}
+
 .sidebar__section {
   margin-bottom: var(--space-4);
 }
@@ -282,6 +287,11 @@ input {
   font-size: var(--text-base);
   color: var(--color-text-body);
   transition: background-color 0.15s ease;
+}
+
+.content__add-btn:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
 }
 
 .content__add-btn:hover {
@@ -422,6 +432,11 @@ input {
   line-height: 1;
 }
 
+.task__arrow:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
+}
+
 /* ===== TASK COMPLETED STATE ===== */
 
 .task--completed .task__title {
@@ -458,6 +473,11 @@ input {
   color: var(--color-text-inverse);
 }
 
+.undo-toast__btn:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
+}
+
 .undo-toast__btn {
   font-size: var(--text-base);
   font-weight: var(--weight-semibold);
@@ -465,6 +485,11 @@ input {
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
   transition: opacity 0.15s ease;
+}
+
+.undo-toast__btn:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
 }
 
 .undo-toast__btn:hover {
@@ -528,6 +553,11 @@ input {
 
 .detail-panel__title-input:focus {
   border-color: var(--color-border);
+}
+
+.detail-panel__close:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
 }
 
 .detail-panel__close {
@@ -622,6 +652,12 @@ input {
   transition: opacity 0.15s ease;
 }
 
+.tag-chip__remove:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 1px;
+  opacity: 1;
+}
+
 .tag-chip:hover .tag-chip__remove {
   opacity: 0.6;
 }
@@ -691,6 +727,12 @@ input {
   opacity: 0.5;
 }
 
+.filter-chip__remove:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 1px;
+  opacity: 1;
+}
+
 .filter-chip:hover .filter-chip__remove {
   opacity: 1;
 }
@@ -708,6 +750,11 @@ input {
   white-space: nowrap;
   opacity: 0.7;
   margin-left: auto;
+}
+
+.filter-summary__clear:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
 }
 
 .filter-summary__clear:hover {
@@ -733,6 +780,11 @@ input {
   opacity: 0.6;
   padding: var(--space-1) 0;
   transition: opacity 0.15s ease;
+}
+
+.detail-panel__tag-add:focus-visible {
+  outline: 2px solid var(--color-bg-active);
+  outline-offset: 2px;
 }
 
 .detail-panel__tag-add:hover {
