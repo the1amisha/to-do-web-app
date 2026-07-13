@@ -252,14 +252,8 @@ function createTaskElement(task) {
 const GROUP_LABELS = { today: 'today', tomorrow: 'tomorrow', thisWeek: 'this week' };
 
 function getEmptyMessage(groupKey) {
-  if (activeFilters.search) {
-    return { title: 'No tasks found.', hint: 'Try another keyword.' };
-  }
-  if (activeFilters.status === 'completed') {
-    return { title: 'No completed tasks yet.', hint: '\u2713 Complete a task to see it here.' };
-  }
-  if (activeFilters.status === 'active') {
-    return { title: 'No active tasks.', hint: 'All tasks are completed.' };
+  if (hasActiveFilters()) {
+    return { title: 'No tasks match your filters.', hint: 'Try removing one or more filters above.' };
   }
   return { title: `No tasks for ${GROUP_LABELS[groupKey] || groupKey}.`, hint: null };
 }
