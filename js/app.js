@@ -3,6 +3,7 @@
 import { getDateBoundaries, resolveDueDate, validateTitle, removeDuplicate } from './utils.js';
 import { VALID_STATUSES, hasActiveFilters, getFilteredTasks } from './filters.js';
 import { createTask, findTask, findTaskIndex, addTask, deleteTask, toggleTask, editTask } from './tasks.js';
+import { saveTasks, loadTasks, saveLists, loadLists } from './storage.js';
 
 // ===== STATE =====
 let tasks = [];
@@ -27,26 +28,17 @@ let activeFilters = {
   search: ''
 };
 
-// ===== STORAGE =====
-const STORAGE_KEY = 'todo_tasks';
+// ===== STORAGE MIGRATION =====
 
-function saveTasks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-}
-
-function loadTasks() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) return [];
-  return JSON.parse(stored).map((task) => {
-    if ('list' in task && !('listId' in task)) {
-      const listId = task.list
-        ? lists.find((l) => l.name.toLowerCase() === task.list.toLowerCase())?.id || null
-        : null;
-      const { list, ...rest } = task;
-      return listId ? { ...rest, listId } : rest;
-    }
-    return task;
-  });
+function migrateTask(task) {
+  if ('list' in task && !('listId' in task)) {
+    const listId = task.list
+      ? lists.find((l) => l.name.toLowerCase() === task.list.toLowerCase())?.id || null
+      : null;
+    const { list, ...rest } = task;
+    return listId ? { ...rest, listId } : rest;
+  }
+  return task;
 }
 
 // ===== DATE HELPERS =====
@@ -686,7 +678,7 @@ function updateTaskTitle(newTitle) {
   const task = getSelectedTask();
   if (!task || !validateTitle(newTitle)) return false;
   task.title = newTitle;
-  saveTasks();
+  saveTasks(tasks);
   render();
   return true;
 }
@@ -695,7 +687,7 @@ function updateTaskDueDate(newDueDate) {
   const task = getSelectedTask();
   if (!task || !newDueDate) return false;
   task.dueDate = newDueDate;
-  saveTasks();
+  saveTasks(tasks);
   render();
   return true;
 }
@@ -704,7 +696,7 @@ function updateTaskList(newListId) {
   const task = getSelectedTask();
   if (!task) return false;
   task.listId = newListId || null;
-  saveTasks();
+  saveTasks(tasks);
   render();
   return true;
 }
@@ -726,7 +718,7 @@ function addTag(rawInput) {
   if (newTags.length === 0) return [];
 
   task.tags.push(...newTags);
-  saveTasks();
+  saveTasks(tasks);
   render();
   return newTags;
 }
@@ -737,7 +729,7 @@ function removeTag(tagName) {
   const index = task.tags.findIndex((t) => t.toLowerCase() === tagName.toLowerCase());
   if (index === -1) return false;
   task.tags.splice(index, 1);
-  saveTasks();
+  saveTasks(tasks);
   render();
   return true;
 }
@@ -774,7 +766,7 @@ function undoDelete() {
   if (!undoState.task) return;
   tasks.splice(undoState.index, 0, undoState.task);
   clearUndoState();
-  saveTasks();
+  saveTasks(tasks);
   render();
 }
 
@@ -827,7 +819,7 @@ function handleTaskListClick(event) {
     const taskEl = event.target.closest('.task');
     if (!taskEl) return;
     toggleTask(tasks, taskEl.dataset.id);
-    saveTasks();
+    saveTasks(tasks);
     render();
     return;
   }
@@ -844,7 +836,7 @@ function handleTaskListClick(event) {
       if (id === selectedTaskId) selectedTaskId = null;
       const deletedTask = deleteTask(tasks, index);
       storeUndoState(deletedTask, index);
-      saveTasks();
+      saveTasks(tasks);
       render();
       showUndoToast();
     });
@@ -867,7 +859,7 @@ function handleAddTask(title, groupKey) {
   const dueDate = resolveDueDate(groupKey);
   const task = createTask(title, { dueDate });
   addTask(tasks, task);
-  saveTasks();
+  saveTasks(tasks);
   render();
   return true;
 }
@@ -988,7 +980,7 @@ function attachEventListeners() {
 
 // ===== INITIALIZATION =====
 function init() {
-  tasks = loadTasks();
+  tasks = loadTasks(migrateTask);
   attachEventListeners();
   renderLists();
   render();
