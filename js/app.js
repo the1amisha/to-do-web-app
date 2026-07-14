@@ -2,6 +2,7 @@
 
 import { getDateBoundaries, resolveDueDate, validateTitle, removeDuplicate } from './utils.js';
 import { VALID_STATUSES, hasActiveFilters, getFilteredTasks } from './filters.js';
+import { createTask, findTask, findTaskIndex, addTask, deleteTask, toggleTask, editTask } from './tasks.js';
 
 // ===== STATE =====
 let tasks = [];
@@ -663,7 +664,7 @@ function renderDetailPanel() {
 // ===== SELECTION =====
 
 function setSelectedTask(id) {
-  if (findTaskIndex(id) === -1) return;
+  if (findTaskIndex(tasks, id) === -1) return;
   selectedTaskId = id;
   render();
   const titleInput = document.querySelector('.detail-panel__title-input');
@@ -676,7 +677,7 @@ function clearSelectedTask() {
 }
 
 function getSelectedTask() {
-  return tasks.find((t) => t.id === selectedTaskId) || null;
+  return findTask(tasks, selectedTaskId);
 }
 
 // ===== TASK MUTATION =====
@@ -739,38 +740,6 @@ function removeTag(tagName) {
   saveTasks();
   render();
   return true;
-}
-
-// ===== TASK DATA =====
-
-function createTask(title, options = {}) {
-  return {
-    id: crypto.randomUUID(),
-    title: title.trim(),
-    completed: false,
-    listId: options.listId || null,
-    dueDate: options.dueDate || '',
-    tags: options.tags || [],
-    subtasks: options.subtasks || [],
-    createdAt: Date.now(),
-  };
-}
-
-function addTask(task) {
-  tasks.push(task);
-}
-
-function findTaskIndex(id) {
-  return tasks.findIndex((t) => t.id === id);
-}
-
-function deleteTask(index) {
-  return tasks.splice(index, 1)[0];
-}
-
-function toggleTask(id) {
-  const task = tasks.find((t) => t.id === id);
-  if (task) task.completed = !task.completed;
 }
 
 // ===== DELETE STATE MANAGEMENT =====
@@ -857,7 +826,7 @@ function handleTaskListClick(event) {
   if (event.target.matches('.task__checkbox')) {
     const taskEl = event.target.closest('.task');
     if (!taskEl) return;
-    toggleTask(taskEl.dataset.id);
+    toggleTask(tasks, taskEl.dataset.id);
     saveTasks();
     render();
     return;
@@ -868,12 +837,12 @@ function handleTaskListClick(event) {
     const taskEl = event.target.closest('.task');
     if (!taskEl) return;
     const id = taskEl.dataset.id;
-    const index = findTaskIndex(id);
+    const index = findTaskIndex(tasks, id);
     if (index === -1) return;
 
     animateTaskRemoval(taskEl, () => {
       if (id === selectedTaskId) selectedTaskId = null;
-      const deletedTask = deleteTask(index);
+      const deletedTask = deleteTask(tasks, index);
       storeUndoState(deletedTask, index);
       saveTasks();
       render();
@@ -897,7 +866,7 @@ function handleAddTask(title, groupKey) {
 
   const dueDate = resolveDueDate(groupKey);
   const task = createTask(title, { dueDate });
-  addTask(task);
+  addTask(tasks, task);
   saveTasks();
   render();
   return true;
