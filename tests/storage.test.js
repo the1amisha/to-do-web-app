@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { saveTasks, loadTasks, saveLists, loadLists } from '../js/storage.js';
 
 // ===== Fixtures =====
@@ -66,7 +66,7 @@ describe('loadTasks', () => {
     localStorage.setItem(TASKS_KEY, JSON.stringify(oldFormat));
     const result = loadTasks((task) => {
       if ('list' in task && !('listId' in task)) {
-        const { list, ...rest } = task;
+        const { list: _list, ...rest } = task;
         return { ...rest, listId: 'personal' };
       }
       return task;

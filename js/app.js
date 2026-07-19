@@ -3,8 +3,8 @@
 import { getDateBoundaries, resolveDueDate, validateTitle, removeDuplicate } from './utils.js';
 import { hasActiveFilters, getFilteredTasks } from './filters.js';
 import { createTask, findTask, findTaskIndex, addTask, deleteTask, toggleTask } from './tasks.js';
-import { saveTasks, loadTasks, saveLists, loadLists } from './storage.js';
-import { createTaskElement, renderSections, renderFilterSummary, renderDetailPanel } from './render.js';
+import { saveTasks, loadTasks } from './storage.js';
+import { renderSections, renderFilterSummary, renderDetailPanel } from './render.js';
 
 // ===== STATE =====
 let tasks = [];
@@ -36,7 +36,7 @@ function migrateTask(task) {
     const listId = task.list
       ? lists.find((l) => l.name.toLowerCase() === task.list.toLowerCase())?.id || null
       : null;
-    const { list, ...rest } = task;
+    const { list: _list, ...rest } = task;
     return listId ? { ...rest, listId } : rest;
   }
   return task;
