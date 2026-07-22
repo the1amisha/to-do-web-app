@@ -4,8 +4,8 @@
 
 export function toDateStr(date) {
   const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
@@ -28,9 +28,9 @@ export function getDateBoundaries() {
 export function resolveDueDate(groupKey) {
   const { today, tomorrow, endOfWeek } = getDateBoundaries();
 
-  if (groupKey === 'today') return toDateStr(today);
-  if (groupKey === 'tomorrow') return toDateStr(tomorrow);
-  if (groupKey === 'thisWeek') return toDateStr(endOfWeek);
+  if (groupKey === "today") return toDateStr(today);
+  if (groupKey === "tomorrow") return toDateStr(tomorrow);
+  if (groupKey === "thisWeek") return toDateStr(endOfWeek);
   return toDateStr(today);
 }
 

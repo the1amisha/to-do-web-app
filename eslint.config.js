@@ -1,8 +1,10 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
+  prettierConfig,
   {
     languageOptions: {
       ecmaVersion: 2022,
@@ -27,4 +29,4 @@ export default [
     // Don't lint third-party code or config files
     ignores: ['node_modules/', 'download/'],
   },
-];
+]

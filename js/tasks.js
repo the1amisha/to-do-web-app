@@ -11,7 +11,7 @@ export function createTask(title, options = {}) {
     title: title.trim(),
     completed: false,
     listId: options.listId || null,
-    dueDate: options.dueDate || '',
+    dueDate: options.dueDate || "",
     tags: options.tags || [],
     subtasks: options.subtasks || [],
     createdAt: Date.now(),
