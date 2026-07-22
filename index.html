@@ -9,49 +9,46 @@
 <body>
   <div class="dashboard">
 
-    <!-- ========== SIDEBAR ========== -->
-    <aside class="sidebar">
+    <!-- ===== SIDEBAR =====
+         Click delegation attached via document.querySelector('[data-sidebar]')
+         Handles: [data-filter] clicks, [data-list] clicks, "+ Add New List" item -->
+    <aside class="sidebar" data-sidebar>
 
       <header class="sidebar__header">
         <h2 class="sidebar__title">Menu</h2>
         <button class="sidebar__hamburger" type="button" aria-label="Toggle sidebar menu">☰</button>
       </header>
 
+      <!-- Search: queried via document.querySelector('[data-search]') -->
       <form class="sidebar__search">
         <label for="search" class="visually-hidden">Search Tasks</label>
         <input id="search" type="text" placeholder="Search" data-search>
       </form>
 
-      <!-- TASKS Navigation -->
+      <!-- Status filters: [data-filter] items matched by handleSidebarClick -->
       <section class="sidebar__section">
         <h3 class="sidebar__section-title">TASKS</h3>
         <nav>
           <ul class="sidebar__nav">
-            <li class="sidebar__item sidebar__item--active" data-filter="all"><button type="button">All Tasks</button></li>
-            <li class="sidebar__item" data-filter="active"><button type="button">Active</button></li>
-            <li class="sidebar__item" data-filter="completed"><button type="button">Completed</button></li>
+            <li class="sidebar__item sidebar__item--active" data-filter="all">
+              <button type="button">All Tasks</button>
+            </li>
+            <li class="sidebar__item" data-filter="active">
+              <button type="button">Active</button>
+            </li>
+            <li class="sidebar__item" data-filter="completed">
+              <button type="button">Completed</button>
+            </li>
           </ul>
         </nav>
       </section>
 
-      <!-- LISTS Navigation -->
+      <!-- Lists: populated dynamically by renderLists() into [data-sidebar="lists"] -->
       <section class="sidebar__section">
         <h3 class="sidebar__section-title">LISTS</h3>
         <nav>
-          <ul class="sidebar__nav" data-sidebar="lists">
-            <!-- rendered by renderLists() -->
-          </ul>
+          <ul class="sidebar__nav" data-sidebar="lists"></ul>
         </nav>
-      </section>
-
-      <!-- TAGS -->
-      <section class="sidebar__section">
-        <h3 class="sidebar__section-title">TAGS</h3>
-        <ul class="sidebar__nav">
-          <li class="sidebar__item">Tag 1</li>
-          <li class="sidebar__item">Tag 2</li>
-          <li class="sidebar__item">+ Add Tag</li>
-        </ul>
       </section>
 
       <!-- Footer -->
@@ -66,44 +63,48 @@
 
     </aside>
 
-    <!-- ========== MAIN CONTENT ========== -->
+    <!-- ===== MAIN CONTENT =====
+         .content class used as container for undo-toast append -->
     <main class="content">
 
-      <!-- Filter Summary (rendered by renderFilterSummary()) -->
+      <!-- Filter summary: rendered by renderFilterSummary() into [data-filter-summary] -->
       <section class="filter-summary" data-filter-summary hidden></section>
 
-      <!-- Today Section -->
-      <section class="content__group" data-group="today">
-        <header class="content__group-header">
-          <h1 class="content__group-title">Today</h1>
-          <button class="content__add-btn">+ Add New Task</button>
-        </header>
-        <ul class="content__task-list"></ul>
-      </section>
+      <!-- Task list container: event delegation via document.querySelector('.content__task-lists') -->
+      <div class="content__task-lists">
 
-      <!-- Tomorrow Section -->
-      <section class="content__group" data-group="tomorrow">
-        <header class="content__group-header">
-          <h2 class="content__group-title">Tomorrow</h2>
-          <button class="content__add-btn">+ Add New Task</button>
-        </header>
-        <ul class="content__task-list"></ul>
-      </section>
+        <!-- Today -->
+        <section class="content__group" data-group="today">
+          <header class="content__group-header">
+            <h1 class="content__group-title">Today</h1>
+            <button class="content__group-add" type="button">+ Add New Task</button>
+          </header>
+          <ul class="content__task-list"></ul>
+        </section>
 
-      <!-- This Week Section -->
-      <section class="content__group" data-group="thisWeek">
-        <header class="content__group-header">
-          <h2 class="content__group-title">This Week</h2>
-          <button class="content__add-btn">+ Add New Task</button>
-        </header>
-        <ul class="content__task-list"></ul>
-      </section>
+        <!-- Tomorrow -->
+        <section class="content__group" data-group="tomorrow">
+          <header class="content__group-header">
+            <h2 class="content__group-title">Tomorrow</h2>
+            <button class="content__group-add" type="button">+ Add New Task</button>
+          </header>
+          <ul class="content__task-list"></ul>
+        </section>
 
+        <!-- This Week -->
+        <section class="content__group" data-group="thisWeek">
+          <header class="content__group-header">
+            <h2 class="content__group-title">This Week</h2>
+            <button class="content__group-add" type="button">+ Add New Task</button>
+          </header>
+          <ul class="content__task-list"></ul>
+        </section>
+
+      </div>
     </main>
 
-    <aside class="detail-panel" hidden>
-      <!-- rendered by renderDetailPanel() -->
-    </aside>
+    <!-- Detail panel: rendered by renderDetailPanel() into .detail-panel -->
+    <aside class="detail-panel" hidden></aside>
 
   </div>
 

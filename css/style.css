@@ -280,7 +280,7 @@ input {
   color: var(--color-text-primary);
 }
 
-.content__add-btn {
+.content__group-add {
   padding: var(--space-2) var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -290,21 +290,21 @@ input {
   transition: background-color 0.15s ease;
 }
 
-.content__add-btn:focus-visible {
+.content__group-add:focus-visible {
   outline: 2px solid var(--color-bg-active);
   outline-offset: 2px;
 }
 
-.content__add-btn:hover {
+.content__group-add:hover {
   background-color: var(--color-bg-hover-2);
 }
 
-.task-add-form {
+.content__group-form {
   flex: 1;
   max-width: 20rem;
 }
 
-.task-add-input {
+.content__group-input {
   width: 100%;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
